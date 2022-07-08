@@ -38,12 +38,13 @@ It is interesting to have TLS termination before the container so you don't have
 
 * `VAULT_ADDR`: address of the Vault server used for storing the temporary secrets.
 * `VAULT_TOKEN`: Vault token used to authenticate to the Vault server.
-* `SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS`: HTTP binding address (e.g. `:80`).
-* `SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS`: HTTPS binding address (e.g. `:443`).
-* `SUPERSECRETMESSAGE_HTTPS_REDIRECT_ENABLED`: whether to enable HTTPS redirection or not (e.g. `true`).
-* `SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN`: domain to use for "Auto" TLS, i.e. automatic generation of certificate with Let's Encrypt. See [Configuration examples - TLS - Auto TLS](#auto-tls).
-* `SUPERSECRETMESSAGE_TLS_CERT_FILEPATH`: certificate filepath to use for "manual" TLS.
-* `SUPERSECRETMESSAGE_TLS_CERT_KEY_FILEPATH`: certificate key filepath to use for "manual" TLS.
+* `VAULT_TLS_INSECURE_SKIP_VERIFY`: Enable to skip TLS verification (default: `false`).
+* `CROW_HTTP_BINDING_ADDRESS`: HTTP binding address (e.g. `:80`).
+* `CROW_HTTPS_BINDING_ADDRESS`: HTTPS binding address (e.g. `:443`).
+* `CROW_HTTPS_REDIRECT_ENABLED`: whether to enable HTTPS redirection or not (e.g. `true`).
+* `CROW_TLS_AUTO_DOMAIN`: domain to use for "Auto" TLS, i.e. automatic generation of certificate with Let's Encrypt. See [Configuration examples - TLS - Auto TLS](#auto-tls).
+* `CROW_TLS_CERT_FILEPATH`: certificate filepath to use for "manual" TLS.
+* `CROW_TLS_CERT_KEY_FILEPATH`: certificate key filepath to use for "manual" TLS.
 
 ### Configuration examples
 
@@ -52,7 +53,7 @@ It is interesting to have TLS termination before the container so you don't have
 VAULT_ADDR=http://vault:8200
 VAULT_TOKEN=root
 
-SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS=:80
+CROW_HTTP_BINDING_ADDRESS=:80
 ```
 
 #### TLS
@@ -62,8 +63,8 @@ SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS=:80
 VAULT_ADDR=http://vault:8200
 VAULT_TOKEN=root
 
-SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS=:443
-SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN=secrets.example.com
+CROW_HTTPS_BINDING_ADDRESS=:443
+CROW_TLS_AUTO_DOMAIN=secrets.example.com
 ```
 
 ##### Auto TLS with HTTP > HTTPS redirection
@@ -71,10 +72,10 @@ SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN=secrets.example.com
 VAULT_ADDR=http://vault:8200
 VAULT_TOKEN=root
 
-SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS=:80
-SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS=:443
-SUPERSECRETMESSAGE_HTTPS_REDIRECT_ENABLED=true
-SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN=secrets.example.com
+CROW_HTTP_BINDING_ADDRESS=:80
+CROW_HTTPS_BINDING_ADDRESS=:443
+CROW_HTTPS_REDIRECT_ENABLED=true
+CROW_TLS_AUTO_DOMAIN=secrets.example.com
 ```
 
 ##### Manual TLS
@@ -82,9 +83,9 @@ SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN=secrets.example.com
 VAULT_ADDR=http://vault:8200
 VAULT_TOKEN=root
 
-SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS=:443
-SUPERSECRETMESSAGE_TLS_CERT_FILEPATH=/mnt/ssl/cert_secrets.example.com.pem
-SUPERSECRETMESSAGE_TLS_CERT_KEY_FILEPATH=/mnt/ssl/key_secrets.example.com.pem
+CROW_HTTPS_BINDING_ADDRESS=:443
+CROW_TLS_CERT_FILEPATH=/mnt/ssl/cert_secrets.example.com.pem
+CROW_TLS_CERT_KEY_FILEPATH=/mnt/ssl/key_secrets.example.com.pem
 ```
 
 ### Screenshot

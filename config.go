@@ -7,20 +7,20 @@ import (
 )
 
 type conf struct {
-	HttpBindingAddress string
-	HttpsBindingAddress string
+	HttpBindingAddress   string
+	HttpsBindingAddress  string
 	HttpsRedirectEnabled bool
-	TLSAutoDomain string
-	TLSCertFilepath string
-	TLSCertKeyFilepath string
+	TLSAutoDomain        string
+	TLSCertFilepath      string
+	TLSCertKeyFilepath   string
 }
 
-const HttpBindingAddressVarenv = "SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS"
-const HttpsBindingAddressVarenv = "SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS"
-const HttpsRedirectEnabledVarenv = "SUPERSECRETMESSAGE_HTTPS_REDIRECT_ENABLED"
-const TLSAutoDomainVarenv = "SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN"
-const TLSCertFilepathVarenv = "SUPERSECRETMESSAGE_TLS_CERT_FILEPATH"
-const TLSCertKeyFilepathVarenv = "SUPERSECRETMESSAGE_TLS_CERT_KEY_FILEPATH"
+const HttpBindingAddressVarenv = "CROW_HTTP_BINDING_ADDRESS"
+const HttpsBindingAddressVarenv = "CROW_HTTPS_BINDING_ADDRESS"
+const HttpsRedirectEnabledVarenv = "CROW_HTTPS_REDIRECT_ENABLED"
+const TLSAutoDomainVarenv = "CROW_TLS_AUTO_DOMAIN"
+const TLSCertFilepathVarenv = "CROW_TLS_CERT_FILEPATH"
+const TLSCertKeyFilepathVarenv = "CROW_TLS_CERT_KEY_FILEPATH"
 
 func loadConfig() conf {
 	var cnf conf

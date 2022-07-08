@@ -1,10 +1,18 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
 	"time"
 
+	"github.com/hashicorp/go-cleanhttp"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/vault/api"
+	"golang.org/x/net/http2"
 )
 
 type SecretMsgStorer interface {
@@ -35,7 +43,7 @@ func (v vault) Store(msg string, ttl string) (token string, err error) {
 	}
 
 	// validate duration length
-	if d > 168 * time.Hour || d == 0 * time.Hour  {
+	if d > 168*time.Hour || d == 0*time.Hour {
 		return "", fmt.Errorf("cannot set ttl to infinte or more than 7 days %v", err)
 	}
 
@@ -74,7 +82,56 @@ func (v vault) createOneTimeToken(ttl string) (string, error) {
 }
 
 func (v vault) newVaultClient() (*api.Client, error) {
-	c, err := api.NewClient(api.DefaultConfig())
+	config := &api.Config{
+		Address:      "https://127.0.0.1:8200",
+		HttpClient:   cleanhttp.DefaultPooledClient(),
+		Timeout:      time.Second * 60,
+		MinRetryWait: time.Millisecond * 1000,
+		MaxRetryWait: time.Millisecond * 1500,
+		MaxRetries:   2,
+		Backoff:      retryablehttp.LinearJitterBackoff,
+	}
+
+	transport := config.HttpClient.Transport.(*http.Transport)
+	transport.TLSHandshakeTimeout = 10 * time.Second
+	insecureSkipVerify := false
+	confInsecureSkipVerify := os.Getenv("VAULT_TLS_INSECURE_SKIP_VERIFY")
+	if len(confInsecureSkipVerify) != 0 {
+		insecureSkipVerifyBool, err := strconv.ParseBool(confInsecureSkipVerify)
+		insecureSkipVerify = insecureSkipVerifyBool
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+	}
+
+	transport.TLSClientConfig = &tls.Config{
+		MinVersion:         tls.VersionTLS12,
+		InsecureSkipVerify: insecureSkipVerify,
+	}
+	if err := http2.ConfigureTransport(transport); err != nil {
+		config.Error = err
+		return nil, err
+	}
+
+	if err := config.ReadEnvironment(); err != nil {
+		config.Error = err
+		return nil, err
+	}
+
+	// Ensure redirects are not automatically followed
+	// Note that this is sane for the API client as it has its own
+	// redirect handling logic (and thus also for command/meta),
+	// but in e.g. http_test actual redirect handling is necessary
+	config.HttpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		// Returning this value causes the Go net library to not close the
+		// response body and to nil out the error. Otherwise retry clients may
+		// try three times on every redirect because it sees an error from this
+		// function (to prevent redirects) passing through to it.
+		return http.ErrUseLastResponse
+	}
+
+	c, err := api.NewClient(config)
 	if err != nil {
 		return nil, err
 	}
@@ -129,4 +186,3 @@ func (v vault) newVaultClientWithToken(token string) (*api.Client, error) {
 	c.SetToken(token)
 	return c, nil
 }
-
