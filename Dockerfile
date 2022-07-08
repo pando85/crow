@@ -1,13 +1,13 @@
-FROM golang:1.15 AS builder
+FROM golang:1.17 AS builder
 
 ENV GO111MODULE=on
 
-WORKDIR /go/src/github.com/algolia/sup3rS3cretMes5age
+WORKDIR /go/src/github.com/pando85/crow
 
 ADD . .
 
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -o sup3rS3cretMes5age .
+RUN CGO_ENABLED=0 GOOS=linux go build -o crow .
 
 
 FROM alpine:latest
@@ -28,7 +28,7 @@ RUN \
 
 WORKDIR /opt/supersecret
 
-COPY --from=builder /go/src/github.com/algolia/sup3rS3cretMes5age/sup3rS3cretMes5age .
+COPY --from=builder /go/src/github.com/pando85/crow/crow .
 COPY static /opt/supersecret/static
 
-CMD [ "./sup3rS3cretMes5age" ]
+CMD [ "./crow" ]

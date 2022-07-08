@@ -13,7 +13,6 @@ services:
 
   supersecret:
     build: ./
-    image: algolia/supersecretmessage:latest
     container_name: supersecret
     environment:
       VAULT_ADDR: http://vault:8200

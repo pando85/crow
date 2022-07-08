@@ -1,4 +1,4 @@
-# sup3rS3cretMes5age!
+# crow!
 
 A simple, secure self-destructing message service, using HashiCorp Vault product as a backend.
 
