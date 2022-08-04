@@ -48,7 +48,8 @@ It is interesting to have TLS termination before the container so you don't have
 * `CROW_VAULT_PREFIX`: vault prefix for secrets (default `cubbyhole/`)
 
 ## Configuration example
-Here is an example of a functionnal docker-compose.yml file
+
+Here is an example of a functional docker-compose.yml file
 ```yaml
 version: '3.2'
 
@@ -63,17 +64,17 @@ services:
     expose:
       - 8200
 
-  supersecret:
+  crow:
     build: ./
-    image: algolia/supersecretmessage:latest
-    container_name: supersecret
+    image: pando85/crow:latest
+    container_name: crow
     environment:
       VAULT_ADDR: http://vault:8200
       VAULT_TOKEN: root
-      SUPERSECRETMESSAGE_HTTP_BINDING_ADDRESS: ":80"
-      SUPERSECRETMESSAGE_HTTPS_BINDING_ADDRESS: ":443"
-      SUPERSECRETMESSAGE_HTTPS_REDIRECT_ENABLED: "true"
-      SUPERSECRETMESSAGE_TLS_AUTO_DOMAIN: secrets.example.com
+      CROW_HTTP_BINDING_ADDRESS: ":80"
+      CROW_HTTPS_BINDING_ADDRESS: ":443"
+      CROW_HTTPS_REDIRECT_ENABLED: "true"
+      CROW_TLS_AUTO_DOMAIN: secrets.example.com
     ports:
       - "80:80"
       - "443:443"
