@@ -21,6 +21,7 @@ ENV \
     CROW_TLS_AUTO_DOMAIN \
     CROW_TLS_CERT_FILEPATH \
     CROW_TLS_CERT_KEY_FILEPATH
+    CROW_VAULT_PREFIX
 
 RUN \
     apk add --no-cache ca-certificates ;\
