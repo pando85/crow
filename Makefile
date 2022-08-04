@@ -9,12 +9,11 @@ COMMIT=$(shell git rev-parse --short HEAD)
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 # Symlink into GOPATH
-DOCKERHUB_USERNAME=ab-ty
 BUILD_DIR=./bin
 CURRENT_DIR=$(shell pwd)
 BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})
 DATE=$(shell date +'%Y%m%d%M%S')
-REPO_NAME?=${DOCKERHUB_USERNAME}/${BINARY}
+REPO_NAME?=${DOCKER_USERNAME}/${BINARY}
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
