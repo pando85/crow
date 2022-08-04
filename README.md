@@ -131,3 +131,7 @@ CROW_TLS_CERT_KEY_FILEPATH=/mnt/ssl/key_secrets.example.com.pem
 ## Contributing
 
 Pull requests are very welcome!
+
+## Credits
+
+Original repository: https://github.com/algolia/sup3rS3cretMes5age
