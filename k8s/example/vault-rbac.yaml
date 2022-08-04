@@ -1,0 +1,57 @@
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: vault-crow-example-sa
+  labels:
+    app.kubernetes.io/name: crow
+    app.kubernetes.io/instance: crow-example
+---
+# This binding allows the deployed Vault instance to authenticate clients
+# through Kubernetes ServiceAccounts (if configured so).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-auth-delegator
+  labels:
+    app.kubernetes.io/name: crow
+    app.kubernetes.io/instance: crow-example
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: vault-crow-example-sa
+# Deploy server to custom namespace
+    namespace: default
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vault-crow-example
+  labels:
+    app.kubernetes.io/name: crow
+    app.kubernetes.io/instance: crow-example
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "update", "patch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name:  vault-crow-example
+  labels:
+    app.kubernetes.io/name: crow
+    app.kubernetes.io/instance: crow-example
+roleRef:
+  kind: Role
+  name: vault-crow-example
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: vault-crow-example-sa
