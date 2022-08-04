@@ -1,20 +1,22 @@
-name: Dockerhub push
+name: Publish
 
 on:
   workflow_run:
     workflows: ["Docker Image"]
     types:
       - completed
+    branches:
+      - 'master'
 
 env:
   DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
   DOCKER_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
 
 jobs:
-  push-image-to-docker-hub:  # job name
-    runs-on: ubuntu-latest  # runner name : (ubuntu latest version)
+  publish:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2 # first action : checkout source code
+    - uses: actions/checkout@v3
     - name: push
       run: |
         make image-push

@@ -18,12 +18,7 @@ REPO_NAME?=${DOCKER_USERNAME}/${BINARY}
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
 # Build the project
-all: link clean test vet linux image-build
-
-linux:
-	cd ${BUILD_DIR}; \
-	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-linux-${GOARCH} . ; \
-	cd - >/dev/null
+all: link clean test vet image-build
 
 image-build:
 	docker build . --file Dockerfile --tag ${BINARY}:$(COMMIT)
@@ -35,8 +30,6 @@ image-push: image-build
 	echo "${DOCKER_TOKEN}" | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker push ${REPO_NAME}:${COMMIT}
 	docker push ${REPO_NAME}:latest
-
-
 
 test:
 	go test -v ./...
@@ -50,6 +43,5 @@ fmt:
 clean:
 	-rm -f ${TEST_REPORT}
 	-rm -f ${VET_REPORT}
-	-rm -f ${BINARY}-*
 
-.PHONY: link linux darwin windows test vet fmt clean
+.PHONY: link clean test vet fmt image-build
