@@ -9,11 +9,12 @@ COMMIT=$(shell git rev-parse --short HEAD)
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 # Symlink into GOPATH
+DOCKERHUB_USERNAME=ab-ty
 BUILD_DIR=./bin
 CURRENT_DIR=$(shell pwd)
 BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})
 DATE=$(shell date +'%Y%m%d%M%S')
-REPO_NAME=${GITHUB_USERNAME}/${BINARY}
+REPO_NAME?=${DOCKERHUB_USERNAME}/${BINARY}
 # Setup the -ldflags option for go build here, interpolate the variable values
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
@@ -29,12 +30,12 @@ image-build:
 	docker build . --file Dockerfile --tag ${BINARY}:$(COMMIT)
 
 image-push: image-build
-	docker tag ${BINARY}:${COMMIT} ${DOCKER_USER}/${BINARY}:${COMMIT}
-	docker tag ${BINARY}:${COMMIT} ${DOCKER_USER}/${BINARY}:latest
+	docker tag ${BINARY}:${COMMIT} ${REPO_NAME}:${COMMIT}
+	docker tag ${BINARY}:${COMMIT} ${REPO_NAME}:latest
 
-	echo "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USER} --password-stdin
-	docker push ${DOCKER_USER}/${BINARY}:${COMMIT}
-	docker push ${DOCKER_USER}/${BINARY}:latest
+	echo "${DOCCKER_TOKEN}" | docker login -u ${DOCKER_USERNAME} --password-stdin
+	docker push ${REPO_NAME}:${COMMIT}
+	docker push ${REPO_NAME}:latest
 
 
 

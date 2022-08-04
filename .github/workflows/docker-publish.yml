@@ -7,9 +7,9 @@ on:
       - completed
 
 env:
-  DOCKER_USER: ${{secrets.DOCKERHUB_USERNAME}}
-  DOCKER_PASSWORD: ${{secrets.DOCKERHUB_TOKEN}}
-  REPO_NAME: crow
+  DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+  DOCKER_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
+  REPO_NAME: abty/crow
 
 jobs:
   push-image-to-docker-hub:  # job name
