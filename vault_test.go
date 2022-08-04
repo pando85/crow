@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"testing"
 
 	"github.com/hashicorp/vault/api"
@@ -11,7 +10,7 @@ import (
 
 var c *api.Client
 
-func TestMain(m *testing.M) {
+func setupSuite(t *testing.T) func() {
 	// uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -19,7 +18,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// pulls an image, creates a container based on it and runs it
-	resource, err := pool.Run("vault", "latest", []string{"VAULT_ADDR", "VAULT_DEV_ROOT_TOKEN_ID=rootsecret"})
+	resource, err := pool.Run("vault", "latest", []string{"VAULT_ADDR", "VAULT_DEV_ROOT_TOKEN_ID=rootsecret", "VAULT_LOG_LEVEL=trace"})
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
@@ -43,18 +42,19 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-	code := m.Run()
-
-	// You can't defer this because os.Exit doesn't care for defer
-	if err := pool.Purge(resource); err != nil {
-		log.Fatalf("could not purge resource: %s", err)
+	return func() {
+		if err := pool.Purge(resource); err != nil {
+			log.Fatalf("could not purge resource: %s", err)
+		}
+		return
 	}
-
-	os.Exit(code)
 }
 
 func TestStoreAndGet(t *testing.T) {
-	v := newVault(c.Address(), "test/", c.Token())
+	teardownSuite := setupSuite(t)
+	defer teardownSuite()
+
+	v := newVault(c.Address(), "cubbyhole/", c.Token())
 	secret := "my secret"
 	token, err := v.Store(secret, "")
 	if err != nil {
@@ -72,7 +72,10 @@ func TestStoreAndGet(t *testing.T) {
 }
 
 func TestMsgCanOnlyBeAccessedOnce(t *testing.T) {
-	v := newVault(c.Address(), "test/", c.Token())
+	teardownSuite := setupSuite(t)
+	defer teardownSuite()
+
+	v := newVault(c.Address(), "cubbyhole/", c.Token())
 	secret := "my secret"
 	token, err := v.Store(secret, "")
 	if err != nil {
