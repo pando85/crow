@@ -32,7 +32,7 @@ image-push: image-build
 	docker tag ${BINARY}:${COMMIT} ${REPO_NAME}:${COMMIT}
 	docker tag ${BINARY}:${COMMIT} ${REPO_NAME}:latest
 
-	echo "${DOCCKER_TOKEN}" | docker login -u ${DOCKER_USERNAME} --password-stdin
+	echo "${DOCKER_TOKEN}" | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker push ${REPO_NAME}:${COMMIT}
 	docker push ${REPO_NAME}:latest
 
