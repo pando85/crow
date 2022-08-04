@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crow-example
+  namespace: default
+  labels:
+    app.kubernetes.io/name: crow
+    app.kubernetes.io/instance: crow-example
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: crow
+      app.kubernetes.io/instance: crow-example
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: crow
+        app.kubernetes.io/instance: crow-example
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: crow-example
+          image: pando85/crow:latest
+          env:
+            - name: ENV_VAR_CASE_SENSITIVE
+              value: "true"
+            - name: CROW_HTTP_BINDING_ADDRESS
+              value: ":8082"
+            - name: VAULT_ADDR
+              value: "https://vault-crow-example:8200"
+            - name: VAULT_TLS_INSECURE_SKIP_VERIFY
+              value: "true"
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-crow-example-unseal-keys
+                  key: vault-root
+                  optional: false
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+          securityContext:
+            {}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 50m
+              memory: 64Mi
+            requests:
+              cpu: 25m
+              memory: 64Mi
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: crow
+              app.kubernetes.io/instance: crow-example
