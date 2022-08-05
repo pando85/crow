@@ -12,7 +12,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: vault-auth-delegator
+  name: vault-crow-example-auth-delegator
   labels:
     app.kubernetes.io/name: crow
     app.kubernetes.io/instance: crow-example
